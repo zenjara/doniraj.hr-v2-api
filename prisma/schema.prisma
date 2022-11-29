@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ar_internal_metadata {
+  key        String   @id @db.VarChar
+  value      String?  @db.VarChar
+  created_at DateTime @db.Timestamp(6)
+  updated_at DateTime @db.Timestamp(6)
+}
+
+model City {
+  id            BigInt          @id @default(autoincrement())
+  name          String?         @db.VarChar
+  created_at    DateTime        @db.Timestamp(6)
+  updated_at    DateTime        @db.Timestamp(6)
+  organizations Organization[]
+
+  @@map("cities")
+}
+
+model data_migrations {
+  version String @id @db.VarChar
+}
+
+model Organization {
+  id          BigInt   @id @default(autoincrement())
+  city_id     BigInt
+  name        String?  @db.VarChar
+  address     String?  @db.VarChar
+  telephone   String?  @db.VarChar
+  email       String?  @db.VarChar
+  iban        String?  @db.VarChar
+  website     String?  @db.VarChar
+  swift       String?  @db.VarChar
+  verified    Boolean? @default(false)
+  archived    Boolean? @default(false)
+  created_at  DateTime @db.Timestamp(6)
+  updated_at  DateTime @db.Timestamp(6)
+  description String?
+  highlighted Boolean? @default(false)
+  city      City   @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rails_cc9c96a6c7")
+
+  @@index([city_id], map: "index_organizations_on_city_id")
+  @@map("organizations")
+}
+
+model schema_migrations {
+  version String @id @db.VarChar
+}
